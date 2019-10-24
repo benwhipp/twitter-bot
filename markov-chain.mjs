@@ -16,7 +16,7 @@ export function markovMe() {
     const splitWords = filteredWords.split(' ');
 
     //Adds the first element in the splitWords array to the firstWords key of benBot
-    benBot.firstWords.push(splitWords[0]);
+    benBot.firstWords.push({wordOne: splitWords[0], wordTwo: splitWords[1], wordThree: splitWords[2]});
     benBot.lastWords.push(splitWords[splitWords.length - 1]);
 
     
@@ -28,8 +28,8 @@ export function markovMe() {
       }
 
       //Checks for last words and if there is a word after the last word, pushes this word after the last word to the array of first words if true
-      if (currentWord.match(/[?.!]/) && splitWords[i + 1]) {
-        benBot.firstWords.push(splitWords[i + 1]);
+      if (currentWord.match(/[?.!]/) && splitWords[i + 3]) {
+        benBot.firstWords.push({wordZero: splitWords[i + 1], wordOne: splitWords[i + 2], wordTwo: splitWords[i + 3]});
       }
 
       //Checks if the word exists in middle words object, adds it if not
@@ -38,29 +38,34 @@ export function markovMe() {
       }
 
       //If there's a word after the given word in the array, push this to the middle words key as an element in the oppropriate array
-      if (splitWords[i + 1]) {
-        benBot.middleWords[currentWord].push(splitWords[i + 1]);
+      if (splitWords[i + 2]) {
+        let wordsToBePushed = {wordOne: splitWords[i + 1], wordTwo: splitWords[i + 2]};
+        benBot.middleWords[currentWord].push(wordsToBePushed);
       }
     }
   });
-
+  console.log(benBot.firstWords);
+  //console.log(benBot.middleWords);
   const words = Object.keys(benBot.middleWords)
   let lastWord = '';
   let startingWord = benBot.firstWords[Math.floor(Math.random() * benBot.firstWords.length)];
+  let wordToAddToResult = startingWord.wordZero + ' ' + startingWord.wordOne + ' ' + startingWord.wordTwo;
+  let result = '';
   let word = startingWord;
-  let result = ''
 
   do {
-    result += word + ' ';
-    let newWord =  benBot.middleWords[word][Math.floor(Math.random() * benBot.middleWords[word].length)]
-    lastWord = word;
+    result += wordToAddToResult + ' ';
+    lastWord = word.wordTwo;
+    let newWord = benBot.middleWords[lastWord][Math.floor(Math.random() * benBot.middleWords[lastWord].length)];
+    if (!newWord /*|| !benBot.middleWords.hasOwnProperty(word)*/) {
+      newWord = benBot.middleWords[lastWord][Math.floor(Math.random() * benBot.middleWords[lastWord].length)];
+    }
+    wordToAddToResult = newWord.wordOne + ' ' + newWord.wordTwo;
     word = newWord;
-    if (!word || !benBot.middleWords.hasOwnProperty(word)) {
-      word = words[Math.floor(Math.random() * words.length)]
-    } 
-    console.log('word = ' + word)
-  } while (!(benBot.lastWords.includes(lastWord) && result.length > 40) && result.length < 265);
-  console.log(JSON.stringify(benBot.lastWords));
+    
+    
+  //Tries to end the sentence on an end word. If it's too short, it'll keep adding words until the next end word or 265 characters is reached.
+  } while (!benBot.lastWords.includes(lastWord) && result.length < 265);
 
   document.getElementById('markovResults').innerText = result;
   document.getElementById('button').addEventListener('click', markovMe);
