@@ -65,7 +65,7 @@ export function markovMe() {
     
     
   //Tries to end the sentence on an end word. If it's too short, it'll keep adding words until the next end word or 265 characters is reached.
-  } while (!benBot.lastWords.includes(lastWord) && result.length < 265);
+  } while (!benBot.lastWords.includes(lastWord) && result.length < 160);
 
   document.getElementById('markovResults').innerText = result;
   document.getElementById('button').addEventListener('click', markovMe);
