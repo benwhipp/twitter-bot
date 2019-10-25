@@ -44,8 +44,7 @@ export function markovMe() {
       }
     }
   });
-  console.log(benBot.firstWords);
-  //console.log(benBot.middleWords);
+
   const words = Object.keys(benBot.middleWords)
   let lastWord = '';
   let startingWord = benBot.firstWords[Math.floor(Math.random() * benBot.firstWords.length)];
@@ -53,19 +52,25 @@ export function markovMe() {
   let result = '';
   let word = startingWord;
 
+  const generateChain = () => {
+    do {
+      result += wordToAddToResult + ' ';
+      lastWord = word.wordTwo;
+      let newWord = benBot.middleWords[lastWord][Math.floor(Math.random() * benBot.middleWords[lastWord].length)];
+      if (!newWord /*|| !benBot.middleWords.hasOwnProperty(word)*/) {
+        newWord = benBot.middleWords[lastWord][Math.floor(Math.random() * benBot.middleWords[lastWord].length)];
+      }
+      wordToAddToResult = newWord.wordOne + ' ' + newWord.wordTwo;
+      word = newWord;
+      
+    //Tries to end the sentence on an end word. If it's too short, it'll keep adding words until the next end word or 265 characters is reached.
+    } while (!benBot.lastWords.includes(lastWord));
+  }
+
   do {
-    result += wordToAddToResult + ' ';
-    lastWord = word.wordTwo;
-    let newWord = benBot.middleWords[lastWord][Math.floor(Math.random() * benBot.middleWords[lastWord].length)];
-    if (!newWord /*|| !benBot.middleWords.hasOwnProperty(word)*/) {
-      newWord = benBot.middleWords[lastWord][Math.floor(Math.random() * benBot.middleWords[lastWord].length)];
-    }
-    wordToAddToResult = newWord.wordOne + ' ' + newWord.wordTwo;
-    word = newWord;
-    
-    
-  //Tries to end the sentence on an end word. If it's too short, it'll keep adding words until the next end word or 265 characters is reached.
-  } while (!benBot.lastWords.includes(lastWord) && result.length < 160);
+    result = '';
+    generateChain();
+  } while (result.length > 280)
 
   document.getElementById('markovResults').innerText = result;
   document.getElementById('button').addEventListener('click', markovMe);
