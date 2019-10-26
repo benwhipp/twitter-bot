@@ -70,8 +70,10 @@ export function markovMe() {
   do {
     result = '';
     generateChain();
-  } while (result.length > 280)
+  } while (result.length > 140)
 
   document.getElementById('markovResults').innerText = result;
   document.getElementById('button').addEventListener('click', markovMe);
+
+  console.log(benBot.middleWords);
 }
