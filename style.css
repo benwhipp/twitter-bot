@@ -5,6 +5,10 @@ body {
     line-height: 150%;
   }
 
+  img {
+    max-width: 200px;
+  }
+
   @media (max-width: 700px) {
     body {
       padding: 5%;
